@@ -182,7 +182,7 @@ function run() {
    if (runFlag == 1) {
      timer = window.setTimeout(run, 60000/bpm);
    }
-   if (beat % beatsPerCycle == 0) {
+   if ((beat+1) % beatsPerCycle == 0) {
       iterate();
    }
    beat += 1;
