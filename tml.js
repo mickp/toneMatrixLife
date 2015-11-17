@@ -12,9 +12,10 @@ var neighbours = new Array(size);
 var beat = 0;
 var timer;
 var bpm = 200;
-
-var rw = 10;
-var rp = 4;
+var rSize = 20;
+var rPad = 6;
+var x0 = 4
+var y0 = 4
 
 function Site(i, j) {
     this.name = name;
@@ -34,12 +35,11 @@ function Site(i, j) {
 
 
 Site.prototype = {
-  draw: function(x0, y0, rSize, rPad) {
-    context.fillStyle = this.state ? '#00e' : '#eee';
+  draw: function() {
     this.rect.x = this.position.beat * (rSize+rPad);
     this.rect.y = this.position.pitch * (rSize+rPad);
+    context.fillStyle = this.state ? '#00e' : '#eee';
     context.fillRect(x0 + this.rect.x, y0 + this.rect.y, rSize, rSize);
-    console.log(this.rect)
   },
 
   iterate: function () {
@@ -54,6 +54,13 @@ Site.prototype = {
 
   toggle: function() {
     this.state = !this.state;
+  },
+
+  onClick: function(x, y) {
+    if (x > this.rect.x && x <= this.rect.x + rSize && y > this.rect.y && y < this.rect.y + rSize) {
+      this.toggle();
+      this.draw();
+    }
   }
 };
 
@@ -132,6 +139,19 @@ for (var i=0; i<freqRatios.length; i++) {
 
 draw();
 
+
+canvas.addEventListener('click', function(event) {
+    lastE = event;
+    var x = event.pageX - canvas.offsetLeft,
+        y = event.pageY - canvas.offsetTop;
+    matrix.forEach(function(row){
+      row.forEach(function(site){
+        site.onClick(x,y);
+      })
+    })
+  })
+
+
 function generate() {
   var wasRunning = false;
   if (runFlag) {
@@ -195,10 +215,6 @@ function iterate() {
 
 
 function draw() {
-  var rSize = 20;
-  var rPad = 6;
-  var x0 = 4
-  var y0 = 4
   canvas.width = size*(rPad + rSize) + rPad
   canvas.height = size*(rPad + rSize) + rPad
   context.clearRect(0, 0, canvas.width, canvas.height);
