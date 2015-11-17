@@ -13,11 +13,57 @@ var beat = 0;
 var timer;
 var bpm = 200;
 
+var rw = 10;
+var rp = 4;
+
+function Site(i, j) {
+    this.name = name;
+
+    this.position = {
+      beat: i,
+      pitch: j,
+    };
+
+    this.nnCount = 0;
+
+    this.rect = {
+      x: null,
+      y: null,
+    }
+  };
+
+
+Site.prototype = {
+  draw: function(x0, y0, rSize, rPad) {
+    context.fillStyle = this.state ? '#00e' : '#eee';
+    this.rect.x = this.position.beat * (rSize+rPad);
+    this.rect.y = this.position.pitch * (rSize+rPad);
+    context.fillRect(x0 + this.rect.x, y0 + this.rect.y, rSize, rSize);
+    console.log(this.rect)
+  },
+
+  iterate: function () {
+    if (this.state) {
+      if (this.nnCount < 2 || this.nnCount > 3) {
+        this.state = false;
+      }
+    } else if (this.nnCount == 3) {
+      this.state = true;
+    }
+  },
+
+  toggle: function() {
+    this.state = !this.state;
+  }
+};
+
+
 for (var i=0; i<matrix.length; i++) {
  matrix[i] = new Array(size);
  neighbours[i] = new Array(size);
  for (var j=0;j<matrix[i].length; j++) {
-   matrix[i][j] = {value: Math.random() <= pOccupied, NNCount: 0};
+   matrix[i][j] = new Site(i, j);
+   matrix[i][j].state = Math.random() <= pOccupied;
    neighbours[i][j] = new Array(0);
   }
 }
@@ -94,7 +140,7 @@ function generate() {
   }
   for (i=0; i<matrix.length; i++) {
     for (j=0; j<matrix[i].length; j++) {
-      matrix[i][j].value = Math.random() <= pOccupied;
+      matrix[i][j].state = Math.random() <= pOccupied;
     }
   }
   draw();
@@ -106,7 +152,7 @@ function generate() {
 function run() {
    draw();
    for (var i=0; i<matrix[beat].length; i++) {
-     if (runFlag == 1 && matrix[beat][i].value) {
+     if (runFlag == 1 && matrix[beat][i].state) {
        amps[i].gain.value = 1;
      } else {
        amps[i].gain.value = 0;
@@ -132,27 +178,18 @@ function iterate() {
  // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
  for (var row=0; row<matrix.length; row++) {
    for (var col=0; col<matrix[row].length; col++) {
-     matrix[row][col].NNCount = 0;
+     matrix[row][col].nnCount = 0;
      for (n in neighbours[row][col]) {
-       if (neighbours[row][col][n].value) {
-         matrix[row][col].NNCount += 1;
+       if (neighbours[row][col][n].state) {
+         matrix[row][col].nnCount += 1;
        }
      }
    }
  }
  for (row in matrix) {
    for (col in matrix[row]) {
-     site = matrix[row][col];
-     if (site.value) {
-       if (site.NNCount < 2 || site.NNCount > 3) {
-         site.value = false;
-       }
-     } else {
-       if (site.NNCount == 3) {
-         site.value = true;
-       }
-     }
-   }
+    matrix[row][col].iterate();
+  }
  }
 }
 
@@ -171,12 +208,7 @@ function draw() {
   context.strokeStyle = '#000';
   for (var i=0; i<size; i++) {
     for (var j=0; j<size; j++) {
-      if (matrix[i][j].value) {
-        context.fillStyle = '#00e';
-      } else {
-        context.fillStyle = '#eee';
-      }
-      context.fillRect(x0 + i*(rSize + rPad), y0 + j*(rSize + rPad), rSize, rSize);
+      matrix[i][j].draw(x0, y0, rSize, rPad);
     }
     context.lineWidth="2";
     context.strokeRect(beat*(rSize+rPad)+rPad/2, 0, rSize, canvas.height)
