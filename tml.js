@@ -133,6 +133,15 @@ for (var i=0; i<freqRatios.length; i++) {
 }
 
 
+function getURL() {
+  var s = document.URL.split('?')[0];
+  s += '?m=' + matrixToString();
+  s += '&b=' + beatsPerCycle;
+  s += '&t=' + bpm;
+  window.location.assign(s);
+}
+
+
 // Parse the URL.
 if (window.location.search.length) {
   // m=[;-separated hex values] is a matrix specification. The regexp
