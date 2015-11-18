@@ -240,3 +240,27 @@ function playPause() {
 function updateValue(ctrl) {
   window[ctrl.id] = ctrl.value;
 }
+
+
+function matrixToString() {
+  var s = ''
+  for (var j=0; j<matrix[0].length; j++) {
+    var b = 0;
+    for (var i=0; i<matrix.length; i++) {
+      if (matrix[i][j].state) b += 1<<i;
+    }
+    s += b.toString(16) + ';';
+  };
+  return s;
+}
+
+function matrixFromString(s) {
+  rows = s.split(";");
+  for (var j=0; j<matrix[0].length; j++) {
+    b = parseInt(rows[j], 16);
+    for (var i=0; i<matrix.length; i++) {
+      matrix[i][j].state = Boolean(b & (1 << i));
+    }
+  };
+  draw();
+}
