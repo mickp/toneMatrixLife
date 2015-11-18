@@ -14,8 +14,8 @@ var timer;
 var bpm = 200;
 var rSize = 20;
 var rPad = 6;
-var x0 = 4
-var y0 = 4
+var x0 = 4;
+var y0 = 4;
 
 function Site(i, j) {
     this.name = name;
@@ -30,7 +30,7 @@ function Site(i, j) {
     this.rect = {
       x: null,
       y: null,
-    }
+    };
   };
 
 
@@ -80,8 +80,6 @@ for (var i=0; i<matrix.length; i++) {
     for (var m=i-1; m<=i+1; m++){
       for (var n=j-1; n<=j+1; n++) {
         var p, q;
-        // if (m>=0 && n>=0 && m<size && n<size && !(m==i && n==j)) {
-        //  neighbours[i][j].push(matrix[m][n]);
         if (m < 0) {
           p = matrix.length - 1;
         } else if (m >= matrix.length) {
@@ -144,7 +142,7 @@ canvas.addEventListener('click', function(event) {
         y = event.pageY - canvas.offsetTop;
     i = parseInt(x / (rSize + rPad));
     j = parseInt(y / (rSize + rPad));
-    matrix[i][j].onClick()
+    matrix[i][j].onClick();
   });
 
 
@@ -211,8 +209,8 @@ function iterate() {
 
 
 function draw() {
-  canvas.width = size*(rPad + rSize) + rPad
-  canvas.height = size*(rPad + rSize) + rPad
+  canvas.width = size*(rPad + rSize) + rPad;
+  canvas.height = size*(rPad + rSize) + rPad;
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "#ffd";
   context.fillRect(0, 0, canvas.width, canvas.height);
@@ -223,7 +221,7 @@ function draw() {
       matrix[i][j].draw(x0, y0, rSize, rPad);
     }
     context.lineWidth="2";
-    context.strokeRect(beat*(rSize+rPad)+rPad/2, 0, rSize, canvas.height)
+    context.strokeRect(beat*(rSize+rPad)+rPad/2, 0, rSize, canvas.height);
     context.lineWidth="0";
   }
 }
@@ -240,5 +238,5 @@ function playPause() {
 
 
 function updateValue(ctrl) {
-  window[ctrl.id] = ctrl.value
+  window[ctrl.id] = ctrl.value;
 }
