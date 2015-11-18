@@ -73,7 +73,6 @@ for (var i=0; i<matrix.length; i++) {
   }
 }
 
-generate();
 
 for (var i=0; i<matrix.length; i++) {
   for (var j=0; j<matrix[i].length; j++) {
@@ -132,6 +131,33 @@ for (var i=0; i<freqRatios.length; i++) {
   oscs[i].connect(amps[i]);
   amps[i].connect(acxt.destination);
 }
+
+
+// Parse the URL.
+if (window.location.search.length) {
+  // m=[;-separated hex values] is a matrix specification. The regexp
+  // puts only the hex values in the first captured group.
+  var match = window.location.search.match('m=(([0-9a-fA-F]+;)+)');
+  if (match) {
+    // hex digits without '[?]m='' are in first captured group.
+    matrixFromString(match[1]);
+  } else {
+    generate();
+  }
+  // b=[integer] specifies the beats per iteration.
+  match = window.location.search.match('b=([0-9]+)');
+  if (match) {
+    beatsPerCycle = parseInt(match[1]);
+    document.getElementById('beatsPerCycle').value = match[1];
+  }
+  // t=[integer] specifies the tempo in bpm
+  match = window.location.search.match('t=([0-9]+)');
+  if (match) {
+    bpm = parseInt(match[1]);
+    document.getElementById('bpm').value = match[1];
+  }
+}
+
 
 draw();
 
@@ -254,12 +280,15 @@ function matrixToString() {
   return s;
 }
 
+
 function matrixFromString(s) {
-  rows = s.split(";");
+  var rows = s.split(";").map(function (str) { return parseInt(str, 16); });
+  if (rows.length < matrix[0].length) {
+    return;
+  }
   for (var j=0; j<matrix[0].length; j++) {
-    b = parseInt(rows[j], 16);
     for (var i=0; i<matrix.length; i++) {
-      matrix[i][j].state = Boolean(b & (1 << i));
+      matrix[i][j].state = Boolean(rows[j] & (1 << i));
     }
   };
   draw();
