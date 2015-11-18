@@ -56,11 +56,9 @@ Site.prototype = {
     this.state = !this.state;
   },
 
-  onClick: function(x, y) {
-    if (x > this.rect.x && x <= this.rect.x + rSize && y > this.rect.y && y < this.rect.y + rSize) {
-      this.toggle();
-      this.draw();
-    }
+  onClick: function() {
+    this.toggle();
+    this.draw();
   }
 };
 
@@ -144,12 +142,10 @@ canvas.addEventListener('click', function(event) {
     lastE = event;
     var x = event.pageX - canvas.offsetLeft,
         y = event.pageY - canvas.offsetTop;
-    matrix.forEach(function(row){
-      row.forEach(function(site){
-        site.onClick(x,y);
-      })
-    })
-  })
+    i = parseInt(x / (rSize + rPad));
+    j = parseInt(y / (rSize + rPad));
+    matrix[i][j].onClick()
+  });
 
 
 function generate() {
